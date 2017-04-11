@@ -85,10 +85,10 @@ class PLImageFetcher: PLFetcher {
         return async {
             var image: UIImage?
             if let cache = imageCache[self.url] {
-                print("HIT -", self.url)
+                //print("HIT -", self.url)
                 image = UIImage(data: cache)
             } else {
-                print("MISS -", self.url)
+                //print("MISS -", self.url)
                 let data = try await(self.download)
                 imageCache[self.url] = data
                 image = UIImage(data: data)

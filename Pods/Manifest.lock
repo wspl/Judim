@@ -2,19 +2,19 @@ PODS:
   - Alamofire (4.4.0)
   - EVGPUImage2 (0.1.0)
   - HydraAsync (0.9.4)
-  - Kingfisher (3.6.1)
+  - Kingfisher (3.6.2)
   - NVActivityIndicatorView (3.6.0)
-  - Realm (2.5.0):
-    - Realm/Headers (= 2.5.0)
-  - Realm/Headers (2.5.0)
-  - RealmSwift (2.5.0):
-    - Realm (= 2.5.0)
-  - RxCocoa (3.3.1):
-    - RxSwift (~> 3.3)
+  - Realm (2.5.1):
+    - Realm/Headers (= 2.5.1)
+  - Realm/Headers (2.5.1)
+  - RealmSwift (2.5.1):
+    - Realm (= 2.5.1)
+  - RxCocoa (3.4.0):
+    - RxSwift (~> 3.4)
   - RxDataSources (1.0.3):
     - RxCocoa (~> 3.0)
     - RxSwift (~> 3.0)
-  - RxSwift (3.3.1)
+  - RxSwift (3.4.0)
   - SnapKit (3.2.0)
   - Spruce (1.0.0)
   - STRegex (0.4.3)
@@ -41,13 +41,13 @@ SPEC CHECKSUMS:
   Alamofire: dc44b1600b800eb63da6a19039a0083d62a6a62d
   EVGPUImage2: 29221cf64d70ab9119dd48fc8898677b2af0c16e
   HydraAsync: 7cd7fc544d4260f261d28a8d9b3f7dc0f77b4c8e
-  Kingfisher: 2f31cb75f3e98d3d4c406cbdcd9b263e956cfa67
+  Kingfisher: 2c94e72c6830622c71d06adf4ea024c37d316830
   NVActivityIndicatorView: c7c1c4300b418bd9ed06459e78d4df859ddbe31f
-  Realm: 62abce501668580092d2be9b6ba7324a3d5f906a
-  RealmSwift: 9f1a8f624f2f153410115c2cb7d486be9976565d
-  RxCocoa: 7dcb7a1860fc9cd0e23dae67ab105fc2916670b6
+  Realm: 32f86104d37c8521f864d4274050b38ba6190733
+  RealmSwift: f719e7511c902b8908593e8f143f59e47931bdb6
+  RxCocoa: d14ef6b6029e1ddc6e966508c09289090de68ff9
   RxDataSources: a021a0e944ba5f7991259829d973afdbfa719c0b
-  RxSwift: 8fc9f2de6275a9101d518444e00bf32f1a42caac
+  RxSwift: 3789a1af753002a14edecdb698a2424624296a9c
   SnapKit: 1ca44df72cfa543218d177cb8aab029d10d86ea7
   Spruce: 07ffdb990923f500111fcbf13d102e16075b230e
   STRegex: c7decbba8601717274774a3f341c4807a327a6d0

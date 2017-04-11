@@ -50,12 +50,22 @@ class Post: Object {
     
     func nextPictures() -> Promise<()> {
         return async {
+            guard self.lastFetchedTo != -2 else { return }
             self.lastFetchedTo += 1
             let pics = try await(self.getPicturesBy(page: self.lastFetchedTo))
-            self.pictures.append(objectsIn: pics)
+            let repeated = pics.filter { pic in
+                self.pictures.filter { hadPic in
+                    hadPic.url == pic.url
+                }.count > 0
+            }
+            
+            if repeated.isEmpty {
+                self.pictures.append(objectsIn: pics)
+            } else {
+                self.lastFetchedTo = -2
+            }
         }
     }
-    
     
     func preload() throws -> Promise<()> {
         return async {

@@ -26,10 +26,11 @@ struct SiteViewModel {
             .asDriver(onErrorJustReturn: [])
     }
     
-    var refresh = PublishSubject<PLRefreshLoadMoreEvent>()
+    var refresh = PublishSubject<PLRefreshEvent>()
+    var loadMore = PublishSubject<PLLoadMoreEvent>()
 
     init() {
-        let rule = try! await(PLFetcher().method(.get).url("https://raw.githubusercontent.com/H-Viewer-Sites/Index/master/sites/Konachan.Pool.txt").html)
+        let rule = try! await(PLFetcher().method(.get).url("https://raw.githubusercontent.com/H-Viewer-Sites/Index/master/sites/g.e-hentai.txt").html)
         site = Site.from(name: "EH", rule: rule)
     }
     
@@ -40,6 +41,17 @@ struct SiteViewModel {
             self.refresh.onNext(.reloadFinished)
         }.catch { err in
             self.refresh.onError(err)
+            print(err)
+        }
+    }
+    
+    func more() {
+        async {
+            try await(self.site.nextPosts())
+            self.posts.value = Array(self.site.posts)
+            self.loadMore.onNext(.loadMoreFinished)
+        }.catch { err in
+            self.loadMore.onError(err)
             print(err)
         }
     }

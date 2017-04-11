@@ -16,7 +16,8 @@ class PostViewController: BaseViewController {
     var infoView: PostInfoView!
     var collectionView: UICollectionView!
     var collectionViewFlowLayout: UICollectionViewFlowLayout!
-    var refreshLoadMore: PLRefreshLoadMore!
+    var refresh: PLRefresh!
+    var loadMore: PLLoadMore!
     var zoomView: UIImageView!
     
     var picturesPageViewController: PicturesPageViewController?
@@ -51,6 +52,8 @@ class PostViewController: BaseViewController {
         collectionView = root.put(UICollectionView(frame: CGRect.zero, collectionViewLayout: collectionViewFlowLayout)) { node, this in
             this.backgroundColor = .white
             this.contentInset = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+            loadMore = PLLoadMore().bind(viewController: self).bind(scrollView: this)
+            
             this.snp.makeConstraints { make in
                 make.top.equalTo(view).offset(64)
                 make.left.equalTo(view)
@@ -76,10 +79,11 @@ class PostViewController: BaseViewController {
         collectionView.scrollIndicatorInsets.top = 150
         collectionView.contentInset.top = 170
         
-        refreshLoadMore = PLRefreshLoadMore()
+        refresh = PLRefresh()
             .bind(navBar: nav)
             .bind(scrollView: collectionView)
             .bind(extraViews: [infoView])
+        
     }
 
     override func viewDidLoad() {
@@ -104,19 +108,37 @@ class PostViewController: BaseViewController {
             .subscribe(onNext: { event in
             switch event {
             case .reloadFinished:
-                self.refreshLoadMore.stopLoading()
+                self.refresh.stopLoading()
             default:
-                self.refreshLoadMore.stopLoading()
+                self.refresh.stopLoading()
             }
         }, onError: { error in
-            self.refreshLoadMore.stopLoading(isFailed: true)
+            self.refresh.stopLoading(isFailed: true)
             print(error.localizedDescription)
         }).addDisposableTo(disposeBag)
         
-        refreshLoadMore.setReload { [weak self] in
+        refresh.setReload { [weak self] in
             self!.viewModel.reload()
         }
-        refreshLoadMore.startLoading()
+        refresh.startLoading()
+        
+        // Load More
+        viewModel.loadMore
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { event in
+                switch event {
+                case .loadMoreFinished:
+                    self.loadMore.stopLoadMore()
+                default:
+                    self.loadMore.stopLoadMore()
+                }
+            }, onError: { error in
+                self.loadMore.stopLoadMore()
+                print(error.localizedDescription)
+            }).addDisposableTo(disposeBag)
+        loadMore.setLoadMore {
+            self.viewModel.more()
+        }
         
         // InfoView
         infoView.configure(post: viewModel.post)
@@ -170,5 +192,16 @@ extension PostViewController: UICollectionViewDelegate, UICollectionViewDelegate
         zoomInCellImage(from: indexPath)
         picturesPageViewController!.withIndex(index: indexPath.row)
         present(picturesPageViewController!, animated: true, completion: nil)
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        //print(scrollView.contentOffset.y + scrollView.frame.size.height, scrollView.contentSize.height)
+        if scrollView.contentSize.height > 0 {
+            if scrollView.contentOffset.y + scrollView.frame.size.height > scrollView.contentSize.height - 50 {
+                if !refresh.isLoading && viewModel.post.value.hasNextPage {
+                    loadMore.startLoadMore()
+                }
+            }
+        }
     }
 }

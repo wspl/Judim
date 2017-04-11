@@ -1,5 +1,5 @@
 //
-//  PLRefreshLoadMore.swift
+//  PLRefresh.swift
 //  Judim
 //
 //  Created by Plutonist on 2017/4/6.
@@ -11,14 +11,12 @@ import NVActivityIndicatorView
 import RxSwift
 import RxCocoa
 
-enum PLRefreshLoadMoreEvent {
+enum PLRefreshEvent {
     case reload
-    case loadMore
     case reloadFinished
-    case loadMoreFinished
 }
 
-class PLRefreshLoadMore {
+class PLRefresh {
     var loadingView: NVActivityIndicatorView!
     var loadingText: UILabel!
     
@@ -26,7 +24,7 @@ class PLRefreshLoadMore {
     weak var scrollView: UIScrollView!
     var movableViews = [UIView]()
 
-    func bind(navBar: PLNavBar) -> PLRefreshLoadMore {
+    func bind(navBar: PLNavBar) -> PLRefresh {
         self.navBar = navBar
         let node = PLUi(view: self.navBar)
         
@@ -58,14 +56,14 @@ class PLRefreshLoadMore {
         return self
     }
     
-    func bind(scrollView: UIScrollView) -> PLRefreshLoadMore {
+    func bind(scrollView: UIScrollView) -> PLRefresh {
         self.scrollView = scrollView
         self.scrollView.bounces = false
         self.scrollView.panGestureRecognizer.addTarget(self, action: #selector(panButton(pan:)))
         return self
     }
     
-    func bind(extraViews: [UIView]) -> PLRefreshLoadMore {
+    func bind(extraViews: [UIView]) -> PLRefresh {
         self.movableViews.append(contentsOf: extraViews)
         return self
     }

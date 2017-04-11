@@ -26,7 +26,8 @@ class PostViewModel {
             .asDriver(onErrorJustReturn: [])
     }
     
-    var refresh = PublishSubject<PLRefreshLoadMoreEvent>()
+    var refresh = PublishSubject<PLRefreshEvent>()
+    var loadMore = PublishSubject<PLLoadMoreEvent>()
     
     init(post: Post) {
         self.post.value = post
@@ -53,6 +54,17 @@ class PostViewModel {
             self.refresh.onNext(.reloadFinished)
         }.catch { err in
             self.refresh.onError(err)
+            print(err)
+        }
+    }
+    
+    func more() {
+        async {
+            try await(self.post.value.nextPictures())
+            self.pictures.value = Array(self.post.value.pictures)
+            self.loadMore.onNext(.loadMoreFinished)
+        }.catch { err in
+            self.loadMore.onError(err)
             print(err)
         }
     }

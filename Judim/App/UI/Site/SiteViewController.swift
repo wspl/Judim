@@ -23,7 +23,8 @@ class SiteViewController: BaseViewController {
     var nav: PLNavBar!
     var tableView: UITableView!
     var infoView: SiteInfoView!
-    var refreshLoadMore: PLRefreshLoadMore!
+    var refresh: PLRefresh!
+    var loadMore: PLLoadMore!
     
     var postViewController: PostViewController?
 
@@ -46,6 +47,7 @@ class SiteViewController: BaseViewController {
             this.tableFooterView = UIView()
             this.separatorInset = UIEdgeInsets(top: 0, left: 115, bottom: 0, right: 25)
             this.separatorColor = THEME_DIVIDER_COLOR
+            loadMore = PLLoadMore().bind(viewController: self).bind(scrollView: this)
             
             this.snp.makeConstraints { make in
                 make.top.equalTo(view).offset(64)
@@ -69,7 +71,7 @@ class SiteViewController: BaseViewController {
         tableView.contentInset.top = tableViewContentOffset
         //postsTableView.addGestureRecognizer(pan)
         
-        refreshLoadMore = PLRefreshLoadMore()
+        refresh = PLRefresh()
             .bind(navBar: nav)
             .bind(scrollView: tableView)
             .bind(extraViews: [infoView])
@@ -97,22 +99,40 @@ class SiteViewController: BaseViewController {
         viewModel.refresh
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { event in
-            switch event {
-            case .reloadFinished:
-                self.refreshLoadMore.stopLoading()
-            default:
-                self.refreshLoadMore.stopLoading()
-            }
-        }, onError: { error in
-            self.refreshLoadMore.stopLoading(isFailed: true)
-            print(error.localizedDescription)
-        }).addDisposableTo(disposeBag)
+                switch event {
+                case .reloadFinished:
+                    self.refresh.stopLoading()
+                default:
+                    self.refresh.stopLoading()
+                }
+            }, onError: { error in
+                self.refresh.stopLoading(isFailed: true)
+                print(error.localizedDescription)
+            }).addDisposableTo(disposeBag)
         
-        refreshLoadMore.setReload {
+        refresh.setReload {
             self.viewModel.reload()
         }
+        refresh.startLoading()
         
-        refreshLoadMore.startLoading()
+        // Load More
+        viewModel.loadMore
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { event in
+                switch event {
+                case .loadMoreFinished:
+                    self.loadMore.stopLoadMore()
+                default:
+                    self.loadMore.stopLoadMore()
+                }
+            }, onError: { error in
+                self.loadMore.stopLoadMore()
+                print(error.localizedDescription)
+            }).addDisposableTo(disposeBag)
+        loadMore.setLoadMore {
+            self.viewModel.more()
+        }
+        //loadMore.startLoadMore()
     }
     
 }
@@ -128,10 +148,16 @@ extension SiteViewController: UITableViewDelegate {
             postViewController = PostViewController(viewModel: viewModel)
         } else {
             postViewController!.viewModel.post.value = self.viewModel.posts.value[indexPath.row]
-            postViewController!.refreshLoadMore.startLoading(noAction: true)
+            postViewController!.refresh.startLoading(noAction: true)
             postViewController!.viewModel.restore()
         }
         RootNav.sharedInstance.pushViewController(postViewController!, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row == viewModel.posts.value.count - 1 && !loadMore.isLoading {
+            loadMore.startLoadMore()
+        }
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
