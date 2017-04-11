@@ -173,13 +173,13 @@
 				CC1BABFB1E90EC2D007D78C4 /* PLFetcher.swift */,
 				CC1BABE51E90D31D007D78C4 /* PLIcon.swift */,
 				CC6D85791E9A171D0001915B /* PLImageFetcher.swift */,
+				CC190A181E9D02DC0042A3CB /* PLLoadMore.swift */,
 				CC0018BB1E92515B0082034C /* PLNavBar.swift */,
 				CC540D9A1E95D221004AB6A7 /* PLRefresh.swift */,
 				CC1BABDB1E90CFC4007D78C4 /* PLUi.swift */,
 				CC1BABDD1E90D002007D78C4 /* RootNav.swift */,
 				CC1BABDF1E90D01D007D78C4 /* RootTab.swift */,
 				CC1BABE71E90D5A4007D78C4 /* ThemeUtils.swift */,
-				CC190A181E9D02DC0042A3CB /* PLLoadMore.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
