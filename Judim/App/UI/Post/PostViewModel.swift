@@ -15,7 +15,7 @@ import Hydra
 typealias PicturesSection = SectionModel<String, PostPicture>
 
 class PostViewModel {
-    var post: Post
+    var post = Variable<Post>(Post())
     
     var pictures = Variable<[PostPicture]>([])
     let picturesDataSource = RxCollectionViewSectionedReloadDataSource<PicturesSection>()
@@ -29,13 +29,27 @@ class PostViewModel {
     var refresh = PublishSubject<PLRefreshLoadMoreEvent>()
     
     init(post: Post) {
-        self.post = post
+        self.post.value = post
     }
     
     func reload() {
         async {
-            try await(self.post.initPictures())
-            self.pictures.value = Array(self.post.pictures)
+            try await(self.post.value.initPictures())
+            self.pictures.value = Array(self.post.value.pictures)
+            self.refresh.onNext(.reloadFinished)
+        }.catch { err in
+            self.refresh.onError(err)
+            print(err)
+        }
+    }
+    
+    func restore() {
+        async {
+            self.pictures.value.removeAll()
+            if self.post.value.pictures.isEmpty {
+                try await(self.post.value.initPictures())
+            }
+            self.pictures.value = Array(self.post.value.pictures)
             self.refresh.onNext(.reloadFinished)
         }.catch { err in
             self.refresh.onError(err)

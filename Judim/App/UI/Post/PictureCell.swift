@@ -78,6 +78,11 @@ class PictureCell: BaseCollectionViewCell {
     
     func configure(picture: PostPicture) {
         renderView()
+        
+        if self.picture != picture {
+            pictureView.image = nil
+        }
+        
         self.picture = picture
         
         pictureView.kf.indicatorType = .activity
@@ -91,9 +96,5 @@ class PictureCell: BaseCollectionViewCell {
                 }
             }
         }
-        
-//        pictureView.kf.setImage(with: URL(string: picture.thumbnail), completionHandler: { image, _, _, _ in
-//            
-//        })
     }
 }

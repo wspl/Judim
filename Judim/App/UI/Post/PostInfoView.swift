@@ -9,6 +9,8 @@
 import UIKit
 import Kingfisher
 import EVGPUImage2
+import RxCocoa
+import RxSwift
 
 class PostInfoView: UIView {
     var coverImageBlur: UIImageView!
@@ -16,6 +18,8 @@ class PostInfoView: UIView {
     var titleLabel: UILabel!
     var byLabel: UILabel!
     var dateLabel: UILabel!
+    
+    let disposeBag = DisposeBag()
     
     init() {
         super.init(frame: CGRect.zero)
@@ -83,26 +87,20 @@ class PostInfoView: UIView {
         }
     }
     
-    func configure(post: Post) {
-        titleLabel.text = post.title
-        dateLabel.text = post.date
-        byLabel.text = post.by
+    func configure(post: Variable<Post>) {
+        titleLabel.text = post.value.title
+        dateLabel.text = post.value.date
+        byLabel.text = post.value.by
         
-        //let coverImageRes = URL(string: post.cover)
-        //coverImage.kf.setImage(with: coverImageRes)
-        coverImage.pil.url(post.cover).show().then { image, alive in
-            if image != nil && alive {
-                let blurFilter = GaussianBlur()
-                blurFilter.blurRadiusInPixels = 20
-                self.coverImageBlur.image = image!.filterWithOperation(blurFilter)
+        post.asObservable().subscribe(onNext: { post in
+            self.coverImage.pil.url(post.cover).show().then { image, alive in
+                if image != nil && alive {
+                    let blurFilter = GaussianBlur()
+                    blurFilter.blurRadiusInPixels = 20
+                    self.coverImageBlur.image = image!.filterWithOperation(blurFilter)
+                }
             }
-        }
-//        coverImageBlur.kf.setImage(
-//            with: coverImageRes,
-//            options: [
-//                .processor(BlurImageProcessor(blurRadius: 20))
-//            ]
-//        )
+        }).addDisposableTo(disposeBag)
     }
     
     required init?(coder aDecoder: NSCoder) {

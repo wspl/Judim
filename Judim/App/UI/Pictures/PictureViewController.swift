@@ -10,45 +10,47 @@ import UIKit
 import Hydra
 import Kingfisher
 import EVGPUImage2
+import RxSwift
+import RxCocoa
 
 class PictureViewController: UIViewController {
     var index: Int
     
     var scrollView: UIScrollView!
     var pictureView: UIImageView!
-    private var _picture: PostPicture?
-    
-    var picture: PostPicture? {
-        get { return _picture }
-        set(value) {
-            async {
-                self._picture = value
-                //let overlay = OverlayImageProcessor(overlay: .white, fraction: 0.5)
-                //self.pictureView.kf.setImage(with: URL(string: self.picture!.thumbnail), options: [.processor(overlay)])
-                let thumbnail = try await(PLImageFetcher().url(self.picture!.thumbnail).downloadImage())
-                self.pictureView.image = thumbnail
-                
-                let blurFilter = GaussianBlur()
-                blurFilter.blurRadiusInPixels = 20
-                self.pictureView.image = thumbnail!.filterWithOperation(blurFilter)
-                //print("no xxx?")
-                
-                try await(self.picture!.preload())
-                var prevProgress: Double = 0
-                self.pictureView.pil.url(self.picture!.url).progress{ percent in
-                    if percent - prevProgress >= 0.1 {
-                        print(percent)
-                        let blurFilter = GaussianBlur()
-                        blurFilter.blurRadiusInPixels = Float(20.0 * (1.0 - percent))
-                        self.pictureView.image = thumbnail!.filterWithOperation(blurFilter)
-                    }
-                    prevProgress = percent
-                }.show()
-                //self.pictureView.kf.setImage(with: URL(string: self.picture!.url))
-            }.then{}
-            //
-        }
-    }
+
+//    var ___picture: PostPicture? {
+//        get { return _picture }
+//        set(value) {
+//            async {
+//                self._picture = value
+//
+//                let thumbnail = try await(PLImageFetcher().url(self.picture!.thumbnail).downloadImage())
+//                self.pictureView.image = thumbnail
+//                
+//                // Slowly on simulator
+////                let blurFilter = GaussianBlur()
+////                blurFilter.blurRadiusInPixels = 20
+////                self.pictureView.image = thumbnail!.filterWithOperation(blurFilter)
+//
+//                try await(self.picture!.preload())
+//                var prevProgress: Double = 0
+//                
+//                self.pictureView.pil.url(self.picture!.url)
+////                .progress{ percent in
+////                    if percent - prevProgress >= 0.1 {
+////                        print(percent)
+////                        let blurFilter = GaussianBlur()
+////                        blurFilter.blurRadiusInPixels = Float(20.0 * (1.0 - percent))
+////                        self.pictureView.image = thumbnail!.filterWithOperation(blurFilter)
+////                    }
+////                    prevProgress = percent
+////                }
+//                .show()
+//            }.then{}
+//            //
+//        }
+//    }
 
     init(index: Int) {
         self.index = index
@@ -66,7 +68,24 @@ class PictureViewController: UIViewController {
             make.edges.equalTo(view)
         }
         pictureView.contentMode = .scaleAspectFit
-
+        
+    }
+    
+    var currentPicture: PostPicture?
+    func set(picture: PostPicture) {
+        if currentPicture != picture {
+            currentPicture = picture
+            async {
+                let thumbnail = try await(PLImageFetcher().url(picture.thumbnail).downloadImage())
+                DispatchQueue.main.sync {
+                    self.pictureView.image = thumbnail
+                }
+                try await(picture.preload())
+                self.pictureView.pil.url(picture.url).show()
+            }.catch{ err in
+                print(err.localizedDescription)
+            }
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {

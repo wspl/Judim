@@ -106,9 +106,7 @@ class PostCell: BaseTableViewCell {
                     return
                 }
             }
-            
-            //let coverImageRes = URL(string: post.cover)
-            //self.coverImage.kf.setImage(with: coverImageRes)
+
             self.coverImage.pil.url(post.cover).show().then { image, alive in
                 if image != nil && alive {
                     let blurFilter = GaussianBlur()
@@ -116,12 +114,6 @@ class PostCell: BaseTableViewCell {
                     self.coverImageBlur.image = image!.filterWithOperation(blurFilter)
                 }
             }
-//            self.coverImageBlur.kf.setImage(
-//                with: coverImageRes,
-//                options: [
-//                    .processor(BlurImageProcessor(blurRadius: 20))
-//                ]
-//            )
         }.then{}
         
     }

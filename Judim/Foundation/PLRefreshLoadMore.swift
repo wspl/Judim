@@ -131,8 +131,10 @@ class PLRefreshLoadMore {
     
     var loadCallback: (() -> ())?
     
-    func startLoading() {
-        loadCallback?()
+    func startLoading(noAction: Bool = false) {
+        if !noAction {
+            loadCallback?()
+        }
         loadingView.startAnimating()
         isLoading = true
         

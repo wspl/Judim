@@ -33,26 +33,24 @@ fileprivate class ImageCache {
     subscript(url: String) -> Data? {
         get {
             let realm = try! Realm(configuration: imageCacheConfig)
-            for cache in realm.objects(ImageCached.self) {
-                if cache.url == url {
-                    return Data(referencing: cache.data)
-                }
+            if let nsData = realm.objects(ImageCached.self).filter("url = '\(url)'").first?.data {
+                return Data(referencing: nsData)
+            } else {
+                return nil
             }
-            return nil
         }
         set(value) {
             let realm = try! Realm(configuration: imageCacheConfig)
-            realm.objects(ImageCached.self).forEach { cache in
-                if cache.url == url {
-                    realm.delete(cache)
+            try! realm.write {
+                for cached in realm.objects(ImageCached.self).filter("url = '\(url)'") {
+                    realm.delete(cached)
                 }
-            }
-            if value != nil {
-                let cache = ImageCached(value: [
-                    "url": url,
-                    "data": value!,
-                ])
-                try! realm.write {
+                
+                if value != nil {
+                    let cache = ImageCached(value: [
+                        "url": url,
+                        "data": value!,
+                    ])
                     realm.add(cache)
                 }
             }
@@ -87,8 +85,10 @@ class PLImageFetcher: PLFetcher {
         return async {
             var image: UIImage?
             if let cache = imageCache[self.url] {
+                print("HIT -", self.url)
                 image = UIImage(data: cache)
             } else {
+                print("MISS -", self.url)
                 let data = try await(self.download)
                 imageCache[self.url] = data
                 image = UIImage(data: data)

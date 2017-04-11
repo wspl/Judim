@@ -24,6 +24,8 @@ class SiteViewController: BaseViewController {
     var tableView: UITableView!
     var infoView: SiteInfoView!
     var refreshLoadMore: PLRefreshLoadMore!
+    
+    var postViewController: PostViewController?
 
     var viewModel = SiteViewModel()
     let disposeBag = DisposeBag()
@@ -121,8 +123,15 @@ extension SiteViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let viewModel = PostViewModel(post: self.viewModel.posts.value[indexPath.row])
-        RootNav.sharedInstance.pushViewController(PostViewController(viewModel: viewModel), animated: true)
+        if postViewController == nil {
+            let viewModel = PostViewModel(post: self.viewModel.posts.value[indexPath.row])
+            postViewController = PostViewController(viewModel: viewModel)
+        } else {
+            postViewController!.viewModel.post.value = self.viewModel.posts.value[indexPath.row]
+            postViewController!.refreshLoadMore.startLoading(noAction: true)
+            postViewController!.viewModel.restore()
+        }
+        RootNav.sharedInstance.pushViewController(postViewController!, animated: true)
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

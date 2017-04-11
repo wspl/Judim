@@ -7,11 +7,13 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 class PicturesPageViewController: UIPageViewController {
     var closeView: UIImageView!
     
-    weak var post: Post!
+    weak var post = Variable<Post>(Post())
     
     var currentIndex: Int = 0
     weak var postViewController: PostViewController?
@@ -22,7 +24,7 @@ class PicturesPageViewController: UIPageViewController {
 //    
     var pictureViews = [Int: PictureViewController]()
     
-    init(post: Post, index: Int, parent: PostViewController) {
+    init(post: Variable<Post>, index: Int, parent: PostViewController) {
         self.post = post
         self.postViewController = parent
 
@@ -46,8 +48,13 @@ class PicturesPageViewController: UIPageViewController {
     func getPictureViewController(index: Int) -> PictureViewController {
         if pictureViews[index] == nil {
             pictureViews[index] = PictureViewController(index: index)
-            pictureViews[index]!.picture = post.pictures[index]
         }
+        //if pictureViews[index]!.picture.value != post!.value.pictures[index] {
+        //    //pictureViews[index]!.pictureView.image = nil
+        //    pictureViews[index]!.picture.value = post!.value.pictures[index]
+        //}
+        
+        pictureViews[index]!.set(picture: post!.value.pictures[index])
         return pictureViews[index]!
     }
     
@@ -87,7 +94,7 @@ extension PicturesPageViewController: UIPageViewControllerDataSource, UIPageView
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        guard currentIndex < post.pictures.count - 1 else { return nil }
+        guard currentIndex < post!.value.pictures.count - 1 else { return nil }
 
         return getPictureViewController(index: currentIndex + 1)
     }
