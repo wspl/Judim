@@ -60,8 +60,11 @@ class PostViewModel {
     
     func more() {
         async {
-            try await(self.post.value.nextPictures())
-            self.pictures.value = Array(self.post.value.pictures)
+            print("start more..")
+            while self.post.value.hasNextPage {
+                let newPics = try await(self.post.value.nextPictures())
+                self.pictures.value.append(contentsOf: Array(newPics))
+            }
             self.loadMore.onNext(.loadMoreFinished)
         }.catch { err in
             self.loadMore.onError(err)

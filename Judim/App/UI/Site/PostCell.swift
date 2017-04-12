@@ -87,35 +87,37 @@ class PostCell: BaseTableViewCell {
     }
     
     func configure(post: Post) {
-        renderView()
-        self.post = post
-        
-        let initialPost = post
-        
-        coverImage.image = nil
-        coverImageBlur.image = nil
-        
-        titleLabel.text = post.title
-        byLabel.text = post.by
-        dateLabel.text = post.date
-        
-        async {
-            if post.cover.isEmpty {
-                try await(post.preload())
-                if self.post !== initialPost {
-                    return
-                }
-            }
+        if self.post == nil || self.post.url != post.url {
+            renderView()
 
-            self.coverImage.pil.url(post.cover).show().then { image, alive in
-                if image != nil && alive {
-                    let blurFilter = GaussianBlur()
-                    blurFilter.blurRadiusInPixels = 20
-                    self.coverImageBlur.image = image!.filterWithOperation(blurFilter)
+            self.post = post
+            
+            let initialPost = post
+            
+            coverImage.image = nil
+            coverImageBlur.image = nil
+            
+            titleLabel.text = post.title
+            byLabel.text = post.by
+            dateLabel.text = post.date
+            
+            async {
+                if post.cover.isEmpty {
+                    try await(post.preload())
+                    if self.post !== initialPost {
+                        return
+                    }
                 }
-            }
-        }.then{}
-        
+                
+                self.coverImage.pil.url(post.cover).show().then { image, alive in
+                    if image != nil && alive {
+                        let blurFilter = GaussianBlur()
+                        blurFilter.blurRadiusInPixels = 20
+                        self.coverImageBlur.image = image!.filterWithOperation(blurFilter)
+                    }
+                }
+            }.then{}
+        }
     }
 }
 

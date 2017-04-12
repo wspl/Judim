@@ -25,9 +25,10 @@ class PLFetcher {
 
     var html: Promise<String> {
         return Promise { resolve, reject in
-            Alamofire
+            self.request = Alamofire
                 .request(self.url, method: self.method, parameters: nil, headers: nil)
-                .responseString(queue: .global(qos: .background), encoding: nil)
+            
+            self.request!.responseString(queue: .global(qos: .background), encoding: nil)
                 { body in
                     
                 if body.error == nil {
@@ -46,19 +47,24 @@ class PLFetcher {
         return self
     }
     
+    var request: DataRequest?
+    
     var download: Promise<Data> {
         return Promise { resolve, reject in
-            Alamofire
+            self.request = Alamofire
                 .request(self.url, method: self.method)
                 .downloadProgress { progress in
                     self.progressCallbacks.forEach { cb in cb(progress.fractionCompleted) }
-            }.responseData(queue: .global(qos: .background)) { response in
+            }
+                
+            self.request!.responseData(queue: .global(qos: .background)) { response in
                 if let data = response.result.value {
                     resolve(data)
                 } else {
                     reject(response.error!)
                 }
             }
+            
         }
     }
 }

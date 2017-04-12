@@ -46,7 +46,9 @@ class Site: Object {
     func nextPosts() -> Promise<()> {
         return async {
             self.lastFetchedTo += 1
+            //print("loading..")
             let posts = try await(self.getPostBy(page: self.lastFetchedTo))
+            //print("end!")
             self.posts.append(objectsIn: posts)
         }
     }

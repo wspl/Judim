@@ -109,6 +109,7 @@ class PostViewController: BaseViewController {
             switch event {
             case .reloadFinished:
                 self.refresh.stopLoading()
+                self.loadMore.startLoadMore()
             default:
                 self.refresh.stopLoading()
             }
@@ -178,7 +179,21 @@ class PostViewController: BaseViewController {
     }
 }
 
-extension PostViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+extension PostViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+//    func numberOfSections(in collectionView: UICollectionView) -> Int {
+//        return 0
+//    }
+//    
+//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+//        return viewModel.post.value.pictures.count
+//    }
+//    
+//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+//        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PictureCell", for: indexPath) as! PictureCell
+//        cell.configure(picture: picuture)
+//        return cell
+//    }
+//    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: (collectionView.contentSize.width - 10) / 3, height: (collectionView.contentSize.width - 10) / 3)
     }
@@ -193,15 +208,15 @@ extension PostViewController: UICollectionViewDelegate, UICollectionViewDelegate
         picturesPageViewController!.withIndex(index: indexPath.row)
         present(picturesPageViewController!, animated: true, completion: nil)
     }
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        //print(scrollView.contentOffset.y + scrollView.frame.size.height, scrollView.contentSize.height)
-        if scrollView.contentSize.height > 0 {
-            if scrollView.contentOffset.y + scrollView.frame.size.height > scrollView.contentSize.height - 50 {
-                if !refresh.isLoading && viewModel.post.value.hasNextPage {
-                    loadMore.startLoadMore()
-                }
-            }
-        }
-    }
+//    
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        //print(scrollView.contentOffset.y + scrollView.frame.size.height, scrollView.contentSize.height)
+//        if scrollView.contentSize.height > 0 {
+//            if scrollView.contentOffset.y + scrollView.frame.size.height > scrollView.contentSize.height - 50 {
+//                if !loadMore.isLoading && viewModel.post.value.hasNextPage {
+//                    loadMore.startLoadMore()
+//                }
+//            }
+//        }
+//    }
 }

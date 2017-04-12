@@ -48,9 +48,9 @@ class Post: Object {
         }
     }
     
-    func nextPictures() -> Promise<()> {
+    func nextPictures() -> Promise<List<PostPicture>> {
         return async {
-            guard self.lastFetchedTo != -2 else { return }
+            guard self.lastFetchedTo != -2 else { return List<PostPicture>() }
             self.lastFetchedTo += 1
             let pics = try await(self.getPicturesBy(page: self.lastFetchedTo))
             let repeated = pics.filter { pic in
@@ -61,8 +61,10 @@ class Post: Object {
             
             if repeated.isEmpty {
                 self.pictures.append(objectsIn: pics)
+                return pics
             } else {
                 self.lastFetchedTo = -2
+                return List<PostPicture>()
             }
         }
     }

@@ -77,21 +77,19 @@ class PictureCell: BaseCollectionViewCell {
     }
     
     func configure(picture: PostPicture) {
-        renderView()
-        
-        if self.picture != picture {
+        if self.picture == nil || self.picture.url != picture.url {
+            print("reload: ", self.picture == nil ? "nil" : self.picture.url, "to", picture.url)
+            renderView()
+            
             pictureView.image = nil
-        }
-        
-        self.picture = picture
-        
-        pictureView.kf.indicatorType = .activity
-        
-        pictureView.pil.url(picture.thumbnail).show().then { image, alive in
-            if image != nil && alive {
-                if self.picture.site!.flags.has("repeatedThumbnail") {
-                    if image != nil {
-                        self.adjustRepeatedThumbnail(image: image!)
+            self.picture = picture
+
+            pictureView.pil.url(picture.thumbnail).show().then { image, alive in
+                if image != nil && alive {
+                    if self.picture.site!.flags.has("repeatedThumbnail") {
+                        if image != nil {
+                            self.adjustRepeatedThumbnail(image: image!)
+                        }
                     }
                 }
             }

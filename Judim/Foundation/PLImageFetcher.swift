@@ -97,10 +97,15 @@ class PLImageFetcher: PLFetcher {
         }
     }
     
+    var visible: Bool { return self.imageView?.window != nil }
+    
     func show() -> Promise<(image: UIImage?, alive: Bool)> {
         return async {
             do {
                 let currentUrl = self.url
+//                self.progress { _ in
+//                    print(self.visible)
+//                }
                 let image = try await(self.downloadImage())
                 
                 var alive = false
