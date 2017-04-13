@@ -22,35 +22,69 @@ class PLLoadMore: UIView {
     weak var scrollView: UIScrollView?
     var indicator: NVActivityIndicatorView!
     
+    enum LoadViewStyle {
+        case embedded
+        case float
+    }
+    
+    private var style: LoadViewStyle = .embedded
+    var divider: UIView!
+
     init() {
         super.init(frame: CGRect.zero)
         backgroundColor = .white
-        layer.cornerRadius = 15
-        layer.shadowColor = THEME_TEXT_REGULAR_COLOR.cgColor
-        layer.shadowOpacity = 0.3
-        layer.shadowOffset = CGSize(width: 0, height: 0.5)
-        layer.shadowRadius = 1
+        
+        divider = UIView()
+        addSubview(divider)
+        divider.backgroundColor = THEME_DIVIDER_COLOR
+        divider.snp.makeConstraints { make in
+            make.height.equalTo(1)
+            make.right.equalTo(self)
+            make.left.equalTo(self)
+            make.top.equalTo(self).offset(-1)
+        }
+        
         indicator = NVActivityIndicatorView(
-            frame: CGRect(x: 5, y: 5, width: 20, height: 20),
-            type: .ballRotate,
+            frame: CGRect(x: 0, y: 0, width: 15, height: 15),
+            type: .ballPulseSync,
             color: THEME_COLOR)
         addSubview(indicator)
     }
     
     func bind(viewController: UIViewController) -> PLLoadMore {
         self.viewController = viewController
-        viewController.view.addSubview(self)
+        //viewController.view.addSubview(self)
         return self
     }
     
     func bind(scrollView: UIScrollView) -> PLLoadMore {
         self.scrollView = scrollView
-        snp.makeConstraints { make in
-            make.size.equalTo(30)
-            make.centerX.equalTo(scrollView)
-            make.bottom.equalTo(scrollView).offset(-10)
+        
+        
+        if let tableView = scrollView as? UITableView {
+            frame = CGRect(x: 0, y: 0, width: scrollView.frame.width, height: 40)
+            style = .embedded
+            
+            tableView.tableFooterView = self
+            isHidden = true
+        } else if let collectionView = scrollView as? UICollectionView {
+            print("asdf")
+            style = .float
+            
+            transform = CGAffineTransform(translationX: 0, y: 50)
+            viewController!.view.addSubview(self)
+            snp.makeConstraints { make in
+                make.bottom.equalTo(collectionView)
+                make.left.equalTo(collectionView)
+                make.right.equalTo(collectionView)
+                make.height.equalTo(40)
+            }
         }
-        self.transform = CGAffineTransform(translationX: 0, y: 50)
+        
+        indicator.snp.makeConstraints { make in
+            make.center.equalTo(self)
+        }
+
         return self
     }
     
@@ -61,17 +95,28 @@ class PLLoadMore: UIView {
         if !noAction {
             loadCallback?()
         }
-        UIView.animate(withDuration: 0.3) {
-            self.transform = CGAffineTransform(translationX: 0, y: 0)
+        if style == .embedded {
+            isHidden = false
+        } else if style == .float {
+            UIView.animate(withDuration: 0.3) {
+                self.transform = CGAffineTransform(translationX: 0, y: 0)
+            }
         }
+
         indicator.startAnimating()
     }
     
     func stopLoadMore() {
         isLoading = false
-        UIView.animate(withDuration: 0.3) {
-            self.transform = CGAffineTransform(translationX: 0, y: 50)
+        
+        if style == .embedded {
+            isHidden = true
+        } else if style == .float {
+            UIView.animate(withDuration: 0.3) {
+                self.transform = CGAffineTransform(translationX: 0, y: 50)
+            }
         }
+        
         indicator.stopAnimating()
     }
     

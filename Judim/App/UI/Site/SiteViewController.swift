@@ -145,6 +145,7 @@ extension SiteViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if indexPath.row == viewModel.posts.value.count - 1 && !loadMore.isLoading {
+            tableView.tableFooterView = loadMore
             loadMore.startLoadMore()
         }
     }
