@@ -178,7 +178,6 @@ extension PostViewController: UICollectionViewDataSource, UICollectionViewDelega
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print("relaod:", viewModel.post.value.pictures.count)
         return viewModel.post.value.pictures.count
     }
     

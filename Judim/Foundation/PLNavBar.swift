@@ -43,11 +43,13 @@ class PLNavBar: UIView {
         let root = PLUi(view: self)
         
         if isWithBack {
-            _ = root.put(UIImageView()) { node, this in
-                this.image = PLIcon.FontAwesome.size(25).color(.white).char("\u{f104}").done()
+            _ = root.put(UIBackView()) { node, this in
+                this.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(pressBack)))
                 this.snp.makeConstraints { make in
-                    make.centerY.equalTo(this.superview!)
-                    make.left.equalTo(this.superview!).offset(15)
+                    make.left.equalTo(this.superview!).offset(-5)
+                    make.top.equalTo(this.superview!)
+                    make.bottom.equalTo(this.superview!)
+                    make.width.equalTo(this.snp.height)
                 }
             }
         }
@@ -62,5 +64,34 @@ class PLNavBar: UIView {
         }
         
         return self
+    }
+    
+    func pressBack() {
+        RootNav.sharedInstance.popViewController(animated: true)
+    }
+}
+
+class UIBackView: UIImageView {
+    init() {
+        super.init(frame: CGRect.zero)
+        contentMode = .center
+        image = PLIcon.FontAwesome.size(25).color(.white).char("\u{f104}").done()
+        isUserInteractionEnabled = true
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        alpha = 0.6
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        alpha = 1
+    }
+    
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        alpha = 1
     }
 }

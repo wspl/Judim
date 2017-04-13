@@ -70,7 +70,7 @@ class PicturesPageViewController: UIPageViewController {
             .done()
         closeView.snp.makeConstraints { make in
             make.left.equalTo(view).offset(15)
-            make.top.equalTo(view).offset(15)
+            make.top.equalTo(view).offset(30)
         }
         closeView.isUserInteractionEnabled = true
         let closeTap = UITapGestureRecognizer(target: self, action: #selector(onTapClose))
@@ -84,18 +84,24 @@ class PicturesPageViewController: UIPageViewController {
         dismiss(animated: true, completion: nil)
         postViewController!.zoomOutCellImage(to: IndexPath(row: currentIndex, section: 0))
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        UIApplication.shared.statusBarStyle = .default
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        UIApplication.shared.statusBarStyle = .lightContent
+    }
 }
 
 extension PicturesPageViewController: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard currentIndex > 0 else { return nil }
-
         return getPictureViewController(index: currentIndex - 1)
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         guard currentIndex < post!.value.pictures.count - 1 else { return nil }
-
         return getPictureViewController(index: currentIndex + 1)
     }
     
