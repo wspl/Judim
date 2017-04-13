@@ -109,13 +109,29 @@ class PostCell: BaseTableViewCell {
                     }
                 }
                 
-                self.coverImage.pil.url(post.cover).show().then { image, alive in
-                    if image != nil && alive {
-                        let blurFilter = GaussianBlur()
-                        blurFilter.blurRadiusInPixels = 20
-                        self.coverImageBlur.image = image!.filterWithOperation(blurFilter)
+                let res = URL(string: post.cover)
+                self.coverImage.kf.setImage(with: res) { image, error, cacheType, imageUrl in
+                    ImageCache.default.retrieveImage(forKey: "blur#!" + post.cover, options: nil) { blurredImage, cacheType in
+                        if let blurredImage = blurredImage {
+                            self.coverImageBlur.image = blurredImage
+                        } else {
+                            let blurFilter = GaussianBlur()
+                            blurFilter.blurRadiusInPixels = 20
+                            self.coverImageBlur.image = image!.filterWithOperation(blurFilter)
+                            ImageCache.default.store(self.coverImageBlur.image!, forKey: "blur#!" + post.cover)
+                        }
                     }
                 }
+                
+                
+//
+//                self.coverImage.pil.url(post.cover).show().then { image, alive in
+//                    if image != nil && alive {
+//                        let blurFilter = GaussianBlur()
+//                        blurFilter.blurRadiusInPixels = 20
+//                        self.coverImageBlur.image = image!.filterWithOperation(blurFilter)
+//                    }
+//                }
             }.then{}
         }
     }

@@ -54,7 +54,7 @@ class PicturesPageViewController: UIPageViewController {
         //    pictureViews[index]!.picture.value = post!.value.pictures[index]
         //}
         
-        pictureViews[index]!.set(picture: post!.value.pictures[index])
+        pictureViews[index]!.configure(picture: post!.value.pictures[index])
         return pictureViews[index]!
     }
     
@@ -101,5 +101,6 @@ extension PicturesPageViewController: UIPageViewControllerDataSource, UIPageView
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         currentIndex = (viewControllers![0] as! PictureViewController).index
+        postViewController!.scrollPictures(to: IndexPath(row: currentIndex, section: 0))
     }
 }

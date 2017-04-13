@@ -92,54 +92,32 @@ class PostViewController: BaseViewController {
         // Data
         collectionView.register(PictureCell.self, forCellWithReuseIdentifier: "PictureCell")
         collectionView.delegate = self
-        viewModel.picturesDataSource.configureCell = { dataSource, collectionView, indexPath, picuture in
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PictureCell", for: indexPath) as! PictureCell
-            cell.configure(picture: picuture)
-            return cell
-        }
-        
-        viewModel.pictureSection
-            .drive(collectionView.rx.items(dataSource: viewModel.picturesDataSource))
-            .addDisposableTo(disposeBag)
-        
+        collectionView.dataSource = self
+
         // Refresh
-        viewModel.refresh
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { event in
-            switch event {
-            case .reloadFinished:
-                self.refresh.stopLoading()
-                self.loadMore.startLoadMore()
-            default:
-                self.refresh.stopLoading()
-            }
-        }, onError: { error in
-            self.refresh.stopLoading(isFailed: true)
-            print(error.localizedDescription)
-        }).addDisposableTo(disposeBag)
-        
-        refresh.setReload { [weak self] in
-            self!.viewModel.reload()
-        }
-        refresh.startLoading()
-        
-        // Load More
-        viewModel.loadMore
+        viewModel.loadPublisher
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { event in
                 switch event {
-                case .loadMoreFinished:
+                case .refreshFinished:
+                    self.refresh.stopLoading()
+                    self.collectionView.reloadData()
+                case .refreshFailed:
+                    self.refresh.stopLoading(isFailed: true)
+                case.loadMoreFinished, .loadMoreFailed:
                     self.loadMore.stopLoadMore()
-                default:
-                    self.loadMore.stopLoadMore()
+                    self.collectionView.reloadData()
                 }
             }, onError: { error in
-                self.loadMore.stopLoadMore()
                 print(error.localizedDescription)
             }).addDisposableTo(disposeBag)
-        loadMore.setLoadMore {
-            self.viewModel.more()
-        }
+        
+        loadMore.setLoadMore { self.viewModel.more() }
+        refresh.setReload { self.viewModel.reload() }
+        
+        refresh.startLoading()
+
+        
         
         // InfoView
         infoView.configure(post: viewModel.post)
@@ -166,10 +144,19 @@ class PostViewController: BaseViewController {
         }
     }
     
+    func scrollPictures(to indexPath: IndexPath) {
+        var atLine = Int(indexPath.row / 3) - 1
+        if atLine < 0 {
+            atLine = 0
+        }
+        let offset = (((collectionView.contentSize.width - 10) / 3) + 5) * CGFloat(atLine)
+        self.collectionView.contentOffset.y = offset - collectionView.contentInset.top
+    }
+    
     func zoomOutCellImage(to indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath) as! PictureCell
-        let realFrame = cell.pictureView.convert(cell.pictureView.frame, to: view)
-        zoomView.image = cell.pictureView.image
+        let cell = self.collectionView.cellForItem(at: indexPath) as! PictureCell
+        let realFrame = cell.pictureView.convert(cell.pictureView.frame, to: self.view)
+        self.zoomView.image = cell.pictureView.image
         UIView.animate(withDuration: 0.3, animations: {
             self.zoomView.frame = realFrame
             self.zoomView.alpha = 1
@@ -177,23 +164,30 @@ class PostViewController: BaseViewController {
             self.zoomView.isHidden = true
         })
     }
+    
+    func restore() {
+        collectionView.setContentOffset(CGPoint(x: collectionView.contentOffset.x, y: -collectionView.contentInset.top), animated: false)
+        viewModel.post.value = Post()
+        collectionView.reloadData()
+    }
 }
 
 extension PostViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
-//    func numberOfSections(in collectionView: UICollectionView) -> Int {
-//        return 0
-//    }
-//    
-//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        return viewModel.post.value.pictures.count
-//    }
-//    
-//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-//        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PictureCell", for: indexPath) as! PictureCell
-//        cell.configure(picture: picuture)
-//        return cell
-//    }
-//    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        print("relaod:", viewModel.post.value.pictures.count)
+        return viewModel.post.value.pictures.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PictureCell", for: indexPath) as! PictureCell
+        cell.configure(picture: viewModel.post.value.pictures[indexPath.row])
+        return cell
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: (collectionView.contentSize.width - 10) / 3, height: (collectionView.contentSize.width - 10) / 3)
     }
@@ -208,15 +202,15 @@ extension PostViewController: UICollectionViewDataSource, UICollectionViewDelega
         picturesPageViewController!.withIndex(index: indexPath.row)
         present(picturesPageViewController!, animated: true, completion: nil)
     }
-//    
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        //print(scrollView.contentOffset.y + scrollView.frame.size.height, scrollView.contentSize.height)
-//        if scrollView.contentSize.height > 0 {
-//            if scrollView.contentOffset.y + scrollView.frame.size.height > scrollView.contentSize.height - 50 {
-//                if !loadMore.isLoading && viewModel.post.value.hasNextPage {
-//                    loadMore.startLoadMore()
-//                }
-//            }
-//        }
-//    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        //print(scrollView.contentOffset.y + scrollView.frame.size.height, scrollView.contentSize.height)
+        if scrollView.contentSize.height > 0 {
+            if scrollView.contentOffset.y + scrollView.frame.size.height > scrollView.contentSize.height - 50 {
+                if !loadMore.isLoading && viewModel.post.value.hasNextPage {
+                    loadMore.startLoadMore()
+                }
+            }
+        }
+    }
 }

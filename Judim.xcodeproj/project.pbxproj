@@ -17,7 +17,6 @@
 		CC0018BC1E92515B0082034C /* PLNavBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0018BB1E92515B0082034C /* PLNavBar.swift */; };
 		CC17778D1E97276A0032DE31 /* PostViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC17778C1E97276A0032DE31 /* PostViewModel.swift */; };
 		CC17778F1E972A340032DE31 /* PictureCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC17778E1E972A330032DE31 /* PictureCell.swift */; };
-		CC190A191E9D02DC0042A3CB /* PLLoadMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC190A181E9D02DC0042A3CB /* PLLoadMore.swift */; };
 		CC1BABDA1E90CF7A007D78C4 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC1BABD91E90CF7A007D78C4 /* BaseViewController.swift */; };
 		CC1BABDC1E90CFC4007D78C4 /* PLUi.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC1BABDB1E90CFC4007D78C4 /* PLUi.swift */; };
 		CC1BABDE1E90D002007D78C4 /* RootNav.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC1BABDD1E90D002007D78C4 /* RootNav.swift */; };
@@ -36,7 +35,6 @@
 		CC1BABFE1E90EFA9007D78C4 /* FormattedUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC1BABFD1E90EFA9007D78C4 /* FormattedUrl.swift */; };
 		CC1BAC001E90FFDA007D78C4 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC1BABFF1E90FFDA007D78C4 /* StringExtensions.swift */; };
 		CC5181C61E950998009BA026 /* SiteInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5181C51E950998009BA026 /* SiteInfoView.swift */; };
-		CC540D9B1E95D221004AB6A7 /* PLRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC540D9A1E95D221004AB6A7 /* PLRefresh.swift */; };
 		CC5828F81E98CCFD0084A580 /* PicturesPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5828F71E98CCFD0084A580 /* PicturesPageViewController.swift */; };
 		CC5828FA1E9913610084A580 /* PictureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5828F91E9913610084A580 /* PictureViewController.swift */; };
 		CC6D857A1E9A171D0001915B /* PLImageFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC6D85791E9A171D0001915B /* PLImageFetcher.swift */; };
@@ -46,6 +44,7 @@
 		CC90353F1E90CB32002D343F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CC90353E1E90CB32002D343F /* Assets.xcassets */; };
 		CC9035421E90CB32002D343F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CC9035401E90CB32002D343F /* LaunchScreen.storyboard */; };
 		CCA234A51E939502002A9E02 /* PostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCA234A41E939502002A9E02 /* PostCell.swift */; };
+		CCF9ADCD1E9F8C160041E184 /* PLLoad.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF9ADCC1E9F8C160041E184 /* PLLoad.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -61,7 +60,6 @@
 		CC073C3B1E90CE0C003E3AAE /* Simple-Line-Icons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Simple-Line-Icons.ttf"; sourceTree = "<group>"; };
 		CC17778C1E97276A0032DE31 /* PostViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostViewModel.swift; sourceTree = "<group>"; };
 		CC17778E1E972A330032DE31 /* PictureCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PictureCell.swift; sourceTree = "<group>"; };
-		CC190A181E9D02DC0042A3CB /* PLLoadMore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PLLoadMore.swift; sourceTree = "<group>"; };
 		CC1BABD91E90CF7A007D78C4 /* BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		CC1BABDB1E90CFC4007D78C4 /* PLUi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PLUi.swift; sourceTree = "<group>"; };
 		CC1BABDD1E90D002007D78C4 /* RootNav.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootNav.swift; sourceTree = "<group>"; };
@@ -80,7 +78,6 @@
 		CC1BABFD1E90EFA9007D78C4 /* FormattedUrl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormattedUrl.swift; sourceTree = "<group>"; };
 		CC1BABFF1E90FFDA007D78C4 /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		CC5181C51E950998009BA026 /* SiteInfoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SiteInfoView.swift; sourceTree = "<group>"; };
-		CC540D9A1E95D221004AB6A7 /* PLRefresh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PLRefresh.swift; sourceTree = "<group>"; };
 		CC5828F71E98CCFD0084A580 /* PicturesPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PicturesPageViewController.swift; sourceTree = "<group>"; };
 		CC5828F91E9913610084A580 /* PictureViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PictureViewController.swift; sourceTree = "<group>"; };
 		CC6D85791E9A171D0001915B /* PLImageFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PLImageFetcher.swift; sourceTree = "<group>"; };
@@ -92,6 +89,7 @@
 		CC9035411E90CB32002D343F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CC9035431E90CB32002D343F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CCA234A41E939502002A9E02 /* PostCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostCell.swift; sourceTree = "<group>"; };
+		CCF9ADCC1E9F8C160041E184 /* PLLoad.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PLLoad.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,9 +171,8 @@
 				CC1BABFB1E90EC2D007D78C4 /* PLFetcher.swift */,
 				CC1BABE51E90D31D007D78C4 /* PLIcon.swift */,
 				CC6D85791E9A171D0001915B /* PLImageFetcher.swift */,
-				CC190A181E9D02DC0042A3CB /* PLLoadMore.swift */,
+				CCF9ADCC1E9F8C160041E184 /* PLLoad.swift */,
 				CC0018BB1E92515B0082034C /* PLNavBar.swift */,
-				CC540D9A1E95D221004AB6A7 /* PLRefresh.swift */,
 				CC1BABDB1E90CFC4007D78C4 /* PLUi.swift */,
 				CC1BABDD1E90D002007D78C4 /* RootNav.swift */,
 				CC1BABDF1E90D01D007D78C4 /* RootTab.swift */,
@@ -393,6 +390,7 @@
 				CC5828F81E98CCFD0084A580 /* PicturesPageViewController.swift in Sources */,
 				CC1BABED1E90D66E007D78C4 /* Selector.swift in Sources */,
 				CC6D857A1E9A171D0001915B /* PLImageFetcher.swift in Sources */,
+				CCF9ADCD1E9F8C160041E184 /* PLLoad.swift in Sources */,
 				CC78F9F31E971D8D00239E2A /* PostViewController.swift in Sources */,
 				CC0018B41E924EB70082034C /* SiteViewController.swift in Sources */,
 				CC1BABE01E90D01D007D78C4 /* RootTab.swift in Sources */,
@@ -409,10 +407,8 @@
 				CC5828FA1E9913610084A580 /* PictureViewController.swift in Sources */,
 				CC1BAC001E90FFDA007D78C4 /* StringExtensions.swift in Sources */,
 				CC5181C61E950998009BA026 /* SiteInfoView.swift in Sources */,
-				CC540D9B1E95D221004AB6A7 /* PLRefresh.swift in Sources */,
 				CC1BABDA1E90CF7A007D78C4 /* BaseViewController.swift in Sources */,
 				CC1BABF81E90E120007D78C4 /* PostPicture.swift in Sources */,
-				CC190A191E9D02DC0042A3CB /* PLLoadMore.swift in Sources */,
 				CC1BABE81E90D5A4007D78C4 /* ThemeUtils.swift in Sources */,
 				CC1BABDC1E90CFC4007D78C4 /* PLUi.swift in Sources */,
 				CCA234A51E939502002A9E02 /* PostCell.swift in Sources */,

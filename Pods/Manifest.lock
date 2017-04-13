@@ -11,9 +11,6 @@ PODS:
     - Realm (= 2.5.1)
   - RxCocoa (3.4.0):
     - RxSwift (~> 3.4)
-  - RxDataSources (1.0.3):
-    - RxCocoa (~> 3.0)
-    - RxSwift (~> 3.0)
   - RxSwift (3.4.0)
   - SnapKit (3.2.0)
   - Spruce (1.0.0)
@@ -29,7 +26,6 @@ DEPENDENCIES:
   - NVActivityIndicatorView
   - RealmSwift
   - RxCocoa
-  - RxDataSources
   - RxSwift
   - SnapKit
   - Spruce
@@ -46,7 +42,6 @@ SPEC CHECKSUMS:
   Realm: 32f86104d37c8521f864d4274050b38ba6190733
   RealmSwift: f719e7511c902b8908593e8f143f59e47931bdb6
   RxCocoa: d14ef6b6029e1ddc6e966508c09289090de68ff9
-  RxDataSources: a021a0e944ba5f7991259829d973afdbfa719c0b
   RxSwift: 3789a1af753002a14edecdb698a2424624296a9c
   SnapKit: 1ca44df72cfa543218d177cb8aab029d10d86ea7
   Spruce: 07ffdb990923f500111fcbf13d102e16075b230e
@@ -54,6 +49,6 @@ SPEC CHECKSUMS:
   SwiftSoup: 85f58ee28f902a6e65581be0d4b935b6a9f78c79
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
 
-PODFILE CHECKSUM: 9f53eec3bd01d270b64609e52e1a0ec2ecaf9c56
+PODFILE CHECKSUM: c8ab712efe561acff3bf7dd6a8149b925111defc
 
 COCOAPODS: 1.2.0

@@ -93,11 +93,18 @@ class PostInfoView: UIView {
         byLabel.text = post.value.by
         
         post.asObservable().subscribe(onNext: { post in
-            self.coverImage.pil.url(post.cover).show().then { image, alive in
-                if image != nil && alive {
-                    let blurFilter = GaussianBlur()
-                    blurFilter.blurRadiusInPixels = 20
-                    self.coverImageBlur.image = image!.filterWithOperation(blurFilter)
+            guard !post.cover.isEmpty else { return }
+            let res = URL(string: post.cover)
+            self.coverImage.kf.setImage(with: res) { image, error, cacheType, imageUrl in
+                ImageCache.default.retrieveImage(forKey: "blur#!" + post.cover, options: nil) { image, cacheType in
+                    if let image = image {
+                        self.coverImageBlur.image = image
+                    } else {
+                        let blurFilter = GaussianBlur()
+                        blurFilter.blurRadiusInPixels = 20
+                        self.coverImageBlur.image = image!.filterWithOperation(blurFilter)
+                        ImageCache.default.store(self.coverImageBlur.image!, forKey: "blur#!" + post.cover)
+                    }
                 }
             }
         }).addDisposableTo(disposeBag)

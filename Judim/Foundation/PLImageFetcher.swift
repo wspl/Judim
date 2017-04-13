@@ -100,17 +100,15 @@ class PLImageFetcher: PLFetcher {
     var visible: Bool { return self.imageView?.window != nil }
     
     func show() -> Promise<(image: UIImage?, alive: Bool)> {
+        print("rolllllll", url)
         return async {
             do {
                 let currentUrl = self.url
-//                self.progress { _ in
-//                    print(self.visible)
-//                }
                 let image = try await(self.downloadImage())
-                
+
                 var alive = false
                 if currentUrl == self.url {
-                    DispatchQueue.main.async {
+                    DispatchQueue.main.sync {
                         self.imageView?.image = image
                     }
                     alive = true

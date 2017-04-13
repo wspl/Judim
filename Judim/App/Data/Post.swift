@@ -43,6 +43,9 @@ class Post: Object {
         return async {
             self.pictures.removeAll()
             let pics = try await(self.getPicturesBy(page: self.firstPage()))
+//            for (index, pic) in pics.enumerated() {
+//                //pic.index = index
+//            }
             self.lastFetchedTo = self.firstPage() ?? -2
             self.pictures.append(objectsIn: pics)
         }
@@ -53,6 +56,12 @@ class Post: Object {
             guard self.lastFetchedTo != -2 else { return List<PostPicture>() }
             self.lastFetchedTo += 1
             let pics = try await(self.getPicturesBy(page: self.lastFetchedTo))
+            var index = self.pictures.count
+//            for pic in pics {
+//                pic.index = index
+//                index += 1
+//            }
+            
             let repeated = pics.filter { pic in
                 self.pictures.filter { hadPic in
                     hadPic.url == pic.url

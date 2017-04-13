@@ -9,25 +9,14 @@
 import Foundation
 import RxSwift
 import RxCocoa
-import RxDataSources
 import Hydra
-
-typealias PostSection = SectionModel<String, Post>
 
 struct SiteViewModel {
     var site: Site
 
     var posts = Variable<[Post]>([])
-    let postsDataSource = RxTableViewSectionedReloadDataSource<PostSection>()
 
-    var postSection: Driver<[PostSection]> {
-        return posts.asObservable()
-            .map { [PostSection(model: "", items: $0)] }
-            .asDriver(onErrorJustReturn: [])
-    }
-    
-    var refresh = PublishSubject<PLRefreshEvent>()
-    var loadMore = PublishSubject<PLLoadMoreEvent>()
+    var loadPublisher = PublishSubject<PLLoadEvent>()
 
     init() {
         let rule = try! await(PLFetcher().method(.get).url("https://raw.githubusercontent.com/H-Viewer-Sites/Index/master/sites/g.e-hentai.txt").html)
@@ -38,10 +27,10 @@ struct SiteViewModel {
         async {
             try await(self.site.initPosts())
             self.posts.value = Array(self.site.posts)
-            self.refresh.onNext(.reloadFinished)
+            self.loadPublisher.onNext(.refreshFinished)
         }.catch { err in
-            self.refresh.onError(err)
-            print(err)
+            self.loadPublisher.onNext(.refreshFailed)
+            self.loadPublisher.onError(err)
         }
     }
     
@@ -49,10 +38,10 @@ struct SiteViewModel {
         async {
             try await(self.site.nextPosts())
             self.posts.value = Array(self.site.posts)
-            self.loadMore.onNext(.loadMoreFinished)
+            self.loadPublisher.onNext(.loadMoreFinished)
         }.catch { err in
-            self.loadMore.onError(err)
-            print(err)
+            self.loadPublisher.onNext(.loadMoreFailed)
+            self.loadPublisher.onError(err)
         }
     }
 }

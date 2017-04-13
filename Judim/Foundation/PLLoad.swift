@@ -1,19 +1,89 @@
 //
-//  PLRefresh.swift
+//  PLLoad.swift
 //  Judim
 //
-//  Created by Plutonist on 2017/4/6.
+//  Created by Plutonist on 2017/4/13.
 //  Copyright © 2017年 Plutonist. All rights reserved.
 //
 
+
 import UIKit
 import NVActivityIndicatorView
-import RxSwift
-import RxCocoa
 
-enum PLRefreshEvent {
-    case reload
-    case reloadFinished
+enum PLLoadEvent {
+    case loadMoreFinished
+    case refreshFinished
+    case loadMoreFailed
+    case refreshFailed
+}
+
+class PLLoadMore: UIView {
+    weak var viewController: UIViewController?
+    weak var scrollView: UIScrollView?
+    var indicator: NVActivityIndicatorView!
+    
+    init() {
+        super.init(frame: CGRect.zero)
+        backgroundColor = .white
+        layer.cornerRadius = 15
+        layer.shadowColor = THEME_TEXT_REGULAR_COLOR.cgColor
+        layer.shadowOpacity = 0.3
+        layer.shadowOffset = CGSize(width: 0, height: 0.5)
+        layer.shadowRadius = 1
+        indicator = NVActivityIndicatorView(
+            frame: CGRect(x: 5, y: 5, width: 20, height: 20),
+            type: .ballRotate,
+            color: THEME_COLOR)
+        addSubview(indicator)
+    }
+    
+    func bind(viewController: UIViewController) -> PLLoadMore {
+        self.viewController = viewController
+        viewController.view.addSubview(self)
+        return self
+    }
+    
+    func bind(scrollView: UIScrollView) -> PLLoadMore {
+        self.scrollView = scrollView
+        snp.makeConstraints { make in
+            make.size.equalTo(30)
+            make.centerX.equalTo(scrollView)
+            make.bottom.equalTo(scrollView).offset(-10)
+        }
+        self.transform = CGAffineTransform(translationX: 0, y: 50)
+        return self
+    }
+    
+    var isLoading: Bool = false
+    
+    func startLoadMore(noAction: Bool = false) {
+        isLoading = true
+        if !noAction {
+            loadCallback?()
+        }
+        UIView.animate(withDuration: 0.3) {
+            self.transform = CGAffineTransform(translationX: 0, y: 0)
+        }
+        indicator.startAnimating()
+    }
+    
+    func stopLoadMore() {
+        isLoading = false
+        UIView.animate(withDuration: 0.3) {
+            self.transform = CGAffineTransform(translationX: 0, y: 50)
+        }
+        indicator.stopAnimating()
+    }
+    
+    func setLoadMore(call: @escaping () -> ()) {
+        self.loadCallback = call
+    }
+    
+    var loadCallback: (() -> ())?
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 }
 
 class PLRefresh {
@@ -23,7 +93,7 @@ class PLRefresh {
     weak var navBar: PLNavBar!
     weak var scrollView: UIScrollView!
     var movableViews = [UIView]()
-
+    
     func bind(navBar: PLNavBar) -> PLRefresh {
         self.navBar = navBar
         let node = PLUi(view: self.navBar)
@@ -71,7 +141,7 @@ class PLRefresh {
     func setReload(call: @escaping () -> ()) {
         self.loadCallback = call
     }
-
+    
     
     var beginY: CGFloat = 0
     var dragDistance: CGFloat = 0
@@ -89,12 +159,12 @@ class PLRefresh {
         if pan.state == .began {
             beginY = y
         }
-
+        
         if !isLoading && !isRestoring {
             
             dragDistance = y - beginY
             bouncesDistance = k * sqrt(dragDistance > 0 ? dragDistance : 0)
-
+            
             if pan.state != .ended {
                 if scrollView.contentOffset.y == -scrollView.contentInset.top && y > beginY {
                     scrollView.transform = CGAffineTransform(translationX: 0, y: bouncesDistance)
@@ -149,9 +219,9 @@ class PLRefresh {
             self.loadingView.alpha = 1
         }
         
-//        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(1)) {
-//            self.stopLoading()
-//        }
+        //        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(1)) {
+        //            self.stopLoading()
+        //        }
         
         loadingAble = false
     }

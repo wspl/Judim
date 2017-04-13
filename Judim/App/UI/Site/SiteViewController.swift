@@ -11,7 +11,6 @@ import SnapKit
 import Hydra
 import RxSwift
 import RxCocoa
-import RxDataSources
 import NVActivityIndicatorView
 import Spruce
 
@@ -82,59 +81,48 @@ class SiteViewController: BaseViewController {
         
         // Data
         tableView.register(PostCell.self, forCellReuseIdentifier: "PostCell")
-        
-        tableView.rx.setDelegate(self).addDisposableTo(disposeBag)
-        viewModel.postsDataSource.configureCell = { _, tableView, indexPath, post in
-            let cell = tableView.dequeueReusableCell(withIdentifier: "PostCell") as! PostCell
-            cell.configure(post: post)
-            return cell
-        }
-        
-        viewModel.postSection
-            .drive(tableView.rx.items(dataSource: viewModel.postsDataSource))
-            .addDisposableTo(disposeBag)
-        
+        tableView.dataSource = self
+        tableView.delegate = self
         
         // Refresh
-        viewModel.refresh
+        viewModel.loadPublisher
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { event in
                 switch event {
-                case .reloadFinished:
+                case .refreshFinished:
                     self.refresh.stopLoading()
-                default:
-                    self.refresh.stopLoading()
+                    self.tableView.reloadData()
+                case .refreshFailed:
+                    self.refresh.stopLoading(isFailed: true)
+                case.loadMoreFinished, .loadMoreFailed:
+                    self.loadMore.stopLoadMore()
+                    self.tableView.reloadData()
                 }
             }, onError: { error in
-                self.refresh.stopLoading(isFailed: true)
                 print(error.localizedDescription)
             }).addDisposableTo(disposeBag)
         
-        refresh.setReload {
-            self.viewModel.reload()
-        }
+        loadMore.setLoadMore { self.viewModel.more() }
+        refresh.setReload { self.viewModel.reload() }
+        
         refresh.startLoading()
-        
-        // Load More
-        viewModel.loadMore
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { event in
-                switch event {
-                case .loadMoreFinished:
-                    self.loadMore.stopLoadMore()
-                default:
-                    self.loadMore.stopLoadMore()
-                }
-            }, onError: { error in
-                self.loadMore.stopLoadMore()
-                print(error.localizedDescription)
-            }).addDisposableTo(disposeBag)
-        loadMore.setLoadMore {
-            self.viewModel.more()
-        }
-        //loadMore.startLoadMore()
+    }
+}
+
+extension SiteViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
     }
     
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return viewModel.posts.value.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "PostCell") as! PostCell
+        cell.configure(post: viewModel.posts.value[indexPath.row])
+        return cell
+    }
 }
 
 extension SiteViewController: UITableViewDelegate {
@@ -147,6 +135,7 @@ extension SiteViewController: UITableViewDelegate {
             let viewModel = PostViewModel(post: self.viewModel.posts.value[indexPath.row])
             postViewController = PostViewController(viewModel: viewModel)
         } else {
+            postViewController!.restore()
             postViewController!.viewModel.post.value = self.viewModel.posts.value[indexPath.row]
             postViewController!.refresh.startLoading(noAction: true)
             postViewController!.viewModel.restore()

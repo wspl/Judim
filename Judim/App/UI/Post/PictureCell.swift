@@ -42,9 +42,8 @@ class PictureCell: BaseCollectionViewCell {
             picture.post!.thumbnailRealWidth = Int(value)
         }
     }
-    
-    func adjustRepeatedThumbnail(image: Image) {
 
+    func adjustRepeatedThumbnail(image: Image) -> UIImage {
         if !repeatedThumbnailCalced {
             thumbnailsPerPicture = CGFloat(picture.post!.pictures
                 .filter { $0.thumbnail == self.picture.thumbnail }
@@ -70,27 +69,29 @@ class PictureCell: BaseCollectionViewCell {
             y: 0,
             width: realWidth,
             height: image.size.height))
-
-        if image != nil {
-            pictureView.image = UIImage(cgImage: image!)
-        }
+        
+        let uiImage = UIImage(cgImage: image!)
+        return uiImage
     }
-    
-    func configure(picture: PostPicture) {
-        if self.picture == nil || self.picture.url != picture.url {
-            print("reload: ", self.picture == nil ? "nil" : self.picture.url, "to", picture.url)
-            renderView()
-            
-            pictureView.image = nil
-            self.picture = picture
 
-            pictureView.pil.url(picture.thumbnail).show().then { image, alive in
-                if image != nil && alive {
-                    if self.picture.site!.flags.has("repeatedThumbnail") {
-                        if image != nil {
-                            self.adjustRepeatedThumbnail(image: image!)
+    func configure(picture: PostPicture) {
+        renderView()
+        
+        self.picture = picture
+        //let currentPicture = picture
+        
+        ImageCache.default.retrieveImage(forKey: "sp-thumbnail#!" + picture.url, options: nil) { image, cacheType in
+            if let image = image {
+                self.pictureView.image = image
+            } else {
+                let res = URL(string: picture.thumbnail)
+                self.pictureView.kf.setImage(with: res) { image, error, cacheType, imageUrl in
+                    //if self.picture === currentPicture {
+                        if self.picture.site!.flags.has("repeatedThumbnail") {
+                            self.pictureView.image = self.adjustRepeatedThumbnail(image: image!)
+                            ImageCache.default.store(self.pictureView.image!, forKey: "sp-thumbnail#!" + picture.url)
                         }
-                    }
+                    //}
                 }
             }
         }

@@ -8,7 +8,6 @@ target 'Judim' do
   # Pods for Judim
   pod 'RxSwift'
   pod 'RxCocoa'
-  pod 'RxDataSources'
   pod 'SnapKit'
   pod 'RealmSwift'
   pod 'Alamofire'

@@ -72,19 +72,34 @@ class PictureViewController: UIViewController {
     }
     
     var currentPicture: PostPicture?
-    func set(picture: PostPicture) {
-        if currentPicture != picture {
-            currentPicture = picture
-            async {
-                let thumbnail = try await(PLImageFetcher().url(picture.thumbnail).downloadImage())
-                DispatchQueue.main.sync {
-                    self.pictureView.image = thumbnail
+    func configure(picture: PostPicture) {
+        guard currentPicture != picture else { return }
+        currentPicture = picture
+        
+        async {
+            ImageCache.default.retrieveImage(forKey: "sp-thumbnail#!" + picture.url, options: nil) { image, cacheType in
+                if let image = image {
+                    //DispatchQueue.main.sync {
+                    self.pictureView.image = image
+                    //}
+                } else {
+                    ImageCache.default.retrieveImage(forKey: picture.thumbnail, options: nil) { image, cacheType in
+                        self.pictureView.image = image
+                    }
                 }
-                try await(picture.preload())
-                self.pictureView.pil.url(picture.url).show()
-            }.catch{ err in
-                print(err.localizedDescription)
             }
+            
+            try await(picture.preload())
+            let res = URL(string: picture.url)
+            self.pictureView.kf.setImage(with: res)
+            //let thumbnail = try await(PLImageFetcher().url(picture.thumbnail).downloadImage())
+            //DispatchQueue.main.sync {
+            //    self.pictureView.image = thumbnail
+            //}
+            //try await(picture.preload())
+            //self.pictureView.pil.url(picture.url).show()
+        }.catch{ err in
+            print(err.localizedDescription)
         }
     }
     
